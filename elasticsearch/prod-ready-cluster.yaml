@@ -326,7 +326,7 @@ spec:
                 memory: 16Gi
                 cpu: 8
 
-# This is necessary due to a bug in the operator. Having a lively discussion with the devs on this
+# This is necessary due to a bug in the operator. Having a lively discussion with the developers on this
 # https://github.com/elastic/cloud-on-k8s/issues/2843
 ---
 apiVersion: v1
