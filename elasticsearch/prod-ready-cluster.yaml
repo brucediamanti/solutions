@@ -1,0 +1,347 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: production
+spec:
+  version: 7.6.1
+  updateStrategy:
+    changeBudget:
+      maxSurge: 1
+      maxUnavailable: 1
+  podDisruptionBudget:
+    spec:
+      disruptionsAllowed: 1
+      maxUnavailable: 1
+      selector:
+        matchLabels:
+          elasticsearch.k8s.elastic.co/cluster-name: production
+  http:
+    service:
+      spec:
+        clusterIP: None
+    tls:
+      # Change to false if you want to install full TLS enabled
+      selfSignedCertificate:
+        disabled: true
+  nodeSets:
+  - name: master
+    count: 3
+    config:
+      node.master: true
+      node.data: false
+      node.ingest: false
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 256Gi
+          storageClassName: high-m3
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms8g -Xmx8g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 16Gi
+                cpu: 4
+              limits:
+                memory: 16Gi
+                cpu: 4
+  - name: data-hot
+    count: 3
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.data: hot
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 256Gi
+          storageClassName: high
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms8g -Xmx8g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 16Gi
+                cpu: 8
+              limits:
+                memory: 16Gi
+                cpu: 8
+  - name: data-warm
+    count: 3
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.data: warm
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 256Gi
+          storageClassName: medium
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms8g -Xmx8g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 16Gi
+                cpu: 4
+              limits:
+                memory: 16Gi
+                cpu: 4
+  - name: data-cold
+    count: 3
+    config:
+      node.master: false
+      node.data: true
+      node.ingest: true
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.data: cold
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    volumeClaimTemplates:
+      - metadata:
+          name: elasticsearch-data
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 256Gi
+          storageClassName: best-effort
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms4g -Xmx4g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 8Gi
+                cpu: 1
+              limits:
+                memory: 8Gi
+                cpu: 1
+  - name: ingest
+    count: 3
+    config:
+      node.master: false
+      node.data: false
+      node.ingest: true
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+        annotations:
+          #diamanti.com/endpoint0: '{"network":"v3041-nr","perfTier":"high"}'
+          #diamanti.com/endpoint1: '{"network":"elastic-ingest-r","perfTier":"high"}'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms8g -Xmx8g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 16Gi
+                cpu: 8
+              limits:
+                memory: 16Gi
+                cpu: 8
+  - name: coordinator
+    count: 2
+    config:
+      node.master: false
+      node.data: false
+      node.ingest: true
+      node.ml: false
+      node.store.allow_mmap: false
+      cluster.remote.connect: false
+      node.attr.hostname: ${DIAMANTI_NODE_NAME}
+      cluster.routing.allocation.awareness.attributes: hostname
+      indices.lifecycle.poll_interval: 1m
+    podTemplate:
+      metadata:
+        labels:
+          forceUpdate: 'true'
+        annotations:
+          #diamanti.com/endpoint0: '{"network":"v3041-nr","perfTier":"high"}'
+          #diamanti.com/endpoint1: '{"network":"elastic-ingest-r","perfTier":"high"}'
+      spec:
+        affinity:
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchLabels:
+                      elasticsearch.k8s.elastic.co/cluster-name: production
+                  topologyKey: kubernetes.io/hostname
+        containers:
+          - name: elasticsearch
+            env:
+              - name: ES_JAVA_OPTS
+                value: -Xms8g -Xmx8g
+              - name: DIAMANTI_NODE_NAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: spec.nodeName
+            resources:
+              requests:
+                memory: 16Gi
+                cpu: 8
+              limits:
+                memory: 16Gi
+                cpu: 8
+
+# This is necessary due to a bug in the operator. Having a lively discussion with the devs on this
+# https://github.com/elastic/cloud-on-k8s/issues/2843
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: production-es-ingest-custom
+spec:
+  clusterIP: None
+  type: ClusterIP
+  ports:
+  - name: http
+    port: 9200
+    protocol: TCP
+    targetPort: 9200
+  selector:
+    common.k8s.elastic.co/type: elasticsearch
+    elasticsearch.k8s.elastic.co/cluster-name: production
+    elasticsearch.k8s.elastic.co/statefulset-name: production-es-ingest

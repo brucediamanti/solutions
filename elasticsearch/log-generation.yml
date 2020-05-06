@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: log-generator
+  labels:
+    test: 'log-generator-benchmark'
+spec:
+  # Increase this number to add more clients generating logs
+  parallelism: 60
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: c1
+        image: quay.io/mffiedler/ocp-logtest:latest
+        command:
+          - python
+        #D20# If you really want to mess around with options
+        # https://github.com/openshift/svt/blob/master/openshift_scalability/content/logtest/ocp_logtest-README.md
+        args:
+          - ocp_logtest.py
+          - --line-length=1024
+          - --num-lines=300000
+          - --rate=60000
+          - --fixed-line
+      # nodeSelector:
+      #   placement: secondary
