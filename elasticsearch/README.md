@@ -79,7 +79,7 @@ You can install Kibana alongside for UI access: `kubectl apply -f prod-kibana.ya
 
 ### Connecting to Kibana
 
-You can visit the Kibana pod IP in the browser as such: _http://$IP:5601_ using username: `elastic` and password: `extracted from above`
+You can visit the Kibana pod IP in the browser as such: _<http://$IP:5601>_ using username: `elastic` and password: `extracted from above`
 
 ### Other Post Install Steps
 
