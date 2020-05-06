@@ -23,5 +23,7 @@ spec:
           - --num-lines=300000
           - --rate=60000
           - --fixed-line
+      #D20# If you really want to get fancy you can play with nodeSelector and put the log generating nodes
+      # on separate servers rather than on the same ones as the instances you have Elastic Data nodes on
       # nodeSelector:
       #   placement: secondary
