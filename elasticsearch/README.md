@@ -2,6 +2,8 @@
 
 [Elasticsearch](https://www.elastic.co/) is a search engine based on Lucene. It provides a distributed, multitenant-capable full-text search engine with an HTTP web interface and schema-free JSON documents. Elasticsearch is developed in Java and is released as open source under the terms of the Apache License.
 
+To use these files, you will need to install the [Elastic Cloud on Kubernetes (ECK)](https://www.elastic.co/guide/en/cloud-on-k8s/current/k8s-quickstart.html). Simply follow the instructions to install the latest version of the operator.
+
 ## Introduction
 
 In this document we will discuss how to deploy Elasticsearch and Kibana, with the optional Fluentbit logging component on the Diamanti platform. The resources provided assume that your cluster has _248GB_ of RAM available and at least _1.5TB_ of storage, these values are needed in order to support a production level deployment. You can modify them to fit your requirements.
