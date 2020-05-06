@@ -20,7 +20,7 @@ spec:
       spec:
         clusterIP: None
     tls:
-      # Change to false if you want to install full TLS enabled
+      #D20# Change to false if you want to install full TLS enabled
       selfSignedCertificate:
         disabled: true
   nodeSets:
@@ -92,6 +92,9 @@ spec:
     volumeClaimTemplates:
       - metadata:
           name: elasticsearch-data
+      #D20# Change if you want to play with different networks
+      # annotations:
+      #     diamanti.com/endpoint0: '{"network":"non-routed","perfTier":"high"}'
         spec:
           accessModes:
             - ReadWriteOnce
@@ -156,6 +159,9 @@ spec:
       metadata:
         labels:
           forceUpdate: 'true'
+      #D20# Change if you want to play with different networks
+      # annotations:
+      #     diamanti.com/endpoint0: '{"network":"non-routed","perfTier":"high"}'
       spec:
         affinity:
           podAntiAffinity:
@@ -209,6 +215,9 @@ spec:
       metadata:
         labels:
           forceUpdate: 'true'
+      #D20# Change if you want to play with different networks
+      # annotations:
+      #     diamanti.com/endpoint0: '{"network":"non-routed","perfTier":"high"}'
       spec:
         affinity:
           podAntiAffinity:
@@ -251,9 +260,10 @@ spec:
       metadata:
         labels:
           forceUpdate: 'true'
+        #D20# Change if you want to play with different networks
         annotations:
-          #diamanti.com/endpoint0: '{"network":"v3041-nr","perfTier":"high"}'
-          #diamanti.com/endpoint1: '{"network":"elastic-ingest-r","perfTier":"high"}'
+          #diamanti.com/endpoint0: '{"network":"non-routed","perfTier":"high"}'
+          #diamanti.com/endpoint1: '{"network":"routed","perfTier":"high"}'
       spec:
         affinity:
           podAntiAffinity:
@@ -296,9 +306,10 @@ spec:
       metadata:
         labels:
           forceUpdate: 'true'
+        #D20# Change if you want to play with different networks
         annotations:
-          #diamanti.com/endpoint0: '{"network":"v3041-nr","perfTier":"high"}'
-          #diamanti.com/endpoint1: '{"network":"elastic-ingest-r","perfTier":"high"}'
+          #diamanti.com/endpoint0: '{"network":"non-routed","perfTier":"high"}'
+          #diamanti.com/endpoint1: '{"network":"routed","perfTier":"high"}'
       spec:
         affinity:
           podAntiAffinity:

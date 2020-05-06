@@ -12,15 +12,13 @@ In this document we will discuss how to deploy Elasticsearch and Kibana, with th
   - [Introduction](#introduction)
   - [Configuration Options](#configuration-options)
     - [Resources](#resources)
-    - [Other Configuration Options Here](#other-configuration-options-here)
-  - [Installing the Chart](#installing-the-chart)
-    - [Installed Components](#installed-components)
-    - [SA Password Retrieval](#sa-password-retrieval)
+  - [Installing](#installing)
+    - [Elastic Password Retrieval](#elastic-password-retrieval)
   - [Post Install Steps](#post-install-steps)
-    - [Connecting to ...](#connecting-to)
-    - [Other Post Install Steps ...](#other-post-install-steps)
+    - [Connecting to](#connecting-to)
+    - [Other Post Install Steps](#other-post-install-steps)
   - [Undeploying](#undeploying)
-- [Edit to add the newly generated password](#edit-to-add-the-newly-generated-password)
+    - [TODO put these in the README properly](#todo-put-these-in-the-readme-properly)
 
 <!-- /TOC -->
 
@@ -56,66 +54,42 @@ containers:
         cpu: 4
 ```
 
-### Other Configuration Options Here
+## Installing
 
-## Installing the Chart
+Simply execute `kubectl apply -f prod-ready-cluster.yaml`
 
-You can install by specifying parameters using the `--set key=value[,key=value]` argument to `helm install`. Alternatively, a YAML file that specifies the values for the parameters can be provided while installing the chart.
+### Elastic Password Retrieval
 
-># NOTE: You can copy and customize the default [values.yaml](values.yaml)
-
-For example, to install the chart using the default [values.yaml](values.yaml) file with the value name `value1` being set to `456`, run:
-
-```bash
-$ dctl login
-
-$ helm repo add $someDiamantiURLTBD$
-
-$ helm install --name my-release-name --namespace my-namespace \
-    --set value1=456 -f values.yaml solutions/solution
-```
-
-After a few minutes, you should see <!-- description of what they see here -->
-
-### Installed Components
-
-You can use `kubectl get` to view all of the installed components. Sample output as follows:
-<!-- some sample output if it's useful -->
-
-### SA Password Retrieval
-<!-- This is an example of another installed component that should be specifically mentioned -->
-The sa password is a randomized in the secret.yaml file.  To retrieve the password, perform the following steps once you install the helm chart.
+The password for the cluster is a randomized string which you can extract with the following:
 
 ```console
-$ printf $(kubectl get secret --namespace default mysecretname -o jsonpath="{.data.sapassword}" | base64 --decode);echo
+kubectl get secret production-es-elastic-user -o go-template='{{.data.elastic | base64decode }}'
 ```
 
 ## Post Install Steps
 
-<!-- some example post install steps that might be useful or necessary for the customer -->
+You can install Kibana alongside for UI access: `kubectl apply -f prod-kibana.yaml`
 
-### Connecting to ...
+### Connecting to
 
-### Other Post Install Steps ...
+You can visit the Kibana pod IP in the browser as such: _http://$IP:5601_ using username: `elastic` and password: `extracted from above`
+
+### Other Post Install Steps
 
 ## Undeploying
 
-To uninstall/delete the `my-release` deployment:
+To uninstall/delete simply:
 
 ```bash
-$ helm delete --purge my-release
+kubectl delete -f prod-ready-cluster.yaml -f prod-kibana.yaml
 ```
 
 This command removes all the Kubernetes components associated with the chart and deletes the release.
 
+### TODO put these in the README properly
 
-
-kubectl get secret production-es-elastic-user -o go-template='{{.data.elastic | base64decode }}'
-
-# Edit to add the newly generated password
 kubectl create -f elastic-prod-daemonset-filebeat.yaml
 kubectl delete -f elastic-prod-daemonset-filebeat.yaml
-
 
 kubectl create -f log-generation.yml
 kubectl delete -f log-generation.yml
