@@ -20,7 +20,7 @@ In this document we will discuss how to deploy Elasticsearch and Kibana, with th
     - [Connecting to](#connecting-to)
     - [Other Post Install Steps](#other-post-install-steps)
   - [Undeploying](#undeploying)
-    - [TODO put these in the README properly](#todo-put-these-in-the-readme-properly)
+  - [TODO put these in the README properly](#todo-put-these-in-the-readme-properly)
 
 <!-- /TOC -->
 
@@ -88,7 +88,7 @@ kubectl delete -f prod-ready-cluster.yaml -f prod-kibana.yaml
 
 This command removes all the Kubernetes components associated with the chart and deletes the release.
 
-### TODO put these in the README properly
+## TODO put these in the README properly
 
 kubectl create -f elastic-prod-daemonset-filebeat.yaml
 kubectl delete -f elastic-prod-daemonset-filebeat.yaml
