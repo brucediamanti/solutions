@@ -69,7 +69,7 @@ Simply execute `kubectl apply -f prod-ready-cluster.yaml`
 
 The password for the cluster is a randomized string which you can extract with the following:
 
-```console
+```bash
 kubectl get secret production-es-elastic-user -o go-template='{{.data.elastic | base64decode }}'
 ```
 
