@@ -13,11 +13,12 @@ In this document we will discuss how to deploy Elasticsearch and Kibana, with th
 - [Deploying Elasticsearch & Kibana on Diamanti](#deploying-elasticsearch--kibana-on-diamanti)
   - [Introduction](#introduction)
   - [Configuration Options](#configuration-options)
+  - [Other Configuration Options](#other-configuration-options)
     - [Resources](#resources)
   - [Installing](#installing)
     - [Elastic Password Retrieval](#elastic-password-retrieval)
-  - [Post Install Steps](#post-install-steps)
-    - [Connecting to](#connecting-to)
+  - [Installing Kibana](#installing-kibana)
+    - [Connecting to Kibana](#connecting-to-kibana)
     - [Other Post Install Steps](#other-post-install-steps)
   - [Undeploying](#undeploying)
   - [TODO put these in the README properly](#todo-put-these-in-the-readme-properly)
@@ -28,7 +29,11 @@ In this document we will discuss how to deploy Elasticsearch and Kibana, with th
 
 You can choose to enable or disable the different tiers of Data nodes. The default configuration provides: *Hot*, *Warm* and *Cold* storage nodes, each respectively using the Diamanti built in `StorageClasses` of `high`, `medium` and `best-effort`.
 
-<!-- Other H3 Configuration Items are added in here. These can describe the above values as needed. Some examples given. -->
+## Other Configuration Options
+
+The files have been peppered with comment fields around relevant blocks which you may want to modify in order to run this in a more customized way, e.g. changing the namespace it runs under.
+
+To find these simply grep the files for `#D20#` and all relevant section will return.
 
 ### Resources
 
@@ -68,11 +73,11 @@ The password for the cluster is a randomized string which you can extract with t
 kubectl get secret production-es-elastic-user -o go-template='{{.data.elastic | base64decode }}'
 ```
 
-## Post Install Steps
+## Installing Kibana
 
 You can install Kibana alongside for UI access: `kubectl apply -f prod-kibana.yaml`
 
-### Connecting to
+### Connecting to Kibana
 
 You can visit the Kibana pod IP in the browser as such: _http://$IP:5601_ using username: `elastic` and password: `extracted from above`
 
