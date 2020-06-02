@@ -56,9 +56,9 @@ spec:
   #D20# Change these to the ingress FQDN you have setup
   tls:
   - hosts:
-    - kibana.ingress.sol.diamanti.com
+    - kibana.ingress.se4.diamanti.com
   rules:
-  - host: kibana.ingress.sol.diamanti.com
+  - host: kibana.ingress.se4.diamanti.com
     http:
       paths:
       - backend:
