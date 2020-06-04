@@ -1,0 +1,14 @@
+Elastic Install
+#Works on SE4
+#Remove Disruptions from script
+dctl network update blue --host-network
+
+kubectl create namespace elastic
+dctl namespace set elastic
+#Install Operator
+kubectl apply -f https://download.elastic.co/downloads/eck/1.1.2/all-in-one.yaml
+
+#CREATE storgae class high-m3
+kubectl apply -f prod-ready-cluster.yaml -f prod-kibana.yaml
+#Get password
+kubectl get secret production-es-elastic-user -o go-template='{{.data.elastic | base64decode }}'
